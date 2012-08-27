@@ -1,0 +1,44 @@
+[
+	{
+		"library": {
+			"name": "underscore",
+			"version": "1.0"
+		}
+	},
+	{
+		"library": {
+			"name": "foundations",
+			"version": "1.0"
+		}
+	},
+	{
+		"library": {
+			"name": "foundations.resource",
+			"version": "1.0"
+		}
+	},
+	{
+		"library": {
+			"name": "foundations.io",
+			"version": "1.0"
+		}
+	},
+	{
+		"library": {
+			"name": "foundations.json",
+			"version": "1.0"
+		}
+	},
+	{
+		"library": {
+			"name": "foundations.crypto",
+			"version": "1.0"
+		}
+	},
+	{
+		"library": {
+			"name": "mojoservice.transport",
+			"version": "1.0"
+		}
+	}
+]
