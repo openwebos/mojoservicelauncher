@@ -18,16 +18,16 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-install(FILES node_fork_server.upstart DESTINATION /etc/event.d RENAME node_fork_server)
+install(FILES node_fork_server.upstart DESTINATION etc/event.d RENAME node_fork_server)
 
-install(FILES fork_server.js DESTINATION /usr/palm/nodejs)
+install(FILES fork_server.js DESTINATION usr/palm/nodejs)
 
-install(PROGRAMS jslauncher run-js-service DESTINATION /usr/bin)
+install(PROGRAMS jslauncher run-js-service DESTINATION usr/bin)
 
-install(FILES bootstrap-node.js palm_bus_config.json sources.json DESTINATION /usr/palm/services/jsservicelauncher)
+install(FILES bootstrap-node.js palm_bus_config.json sources.json DESTINATION usr/palm/services/jsservicelauncher)
 
 # Create empty directory
-install(DIRECTORY DESTINATION /usr/palm/frameworks/private/javascripts)
+install(DIRECTORY DESTINATION usr/palm/frameworks/private/javascripts)
 
 add_executable(node_spawner node_spawner.cc)
 
@@ -39,7 +39,8 @@ find_library(PBNJSON_CPP_LIBRARIES pbnjson_cpp)
 find_path(PBNJSON_CPP_INCLUDE_DIRS "pbnjson.hpp")
 include_directories(${PBNJSON_CPP_INCLUDE_DIRS})
 
-target_link_libraries(node_spawner ${BOOST_PO} ${PBNJSON_CPP_LIBRARIES} ${RT})
+
+target_link_libraries(node_spawner ${BOOST_PO} ${PBNJSON_CPP_LIBRARIES} rt)
 
 install(TARGETS node_spawner
         DESTINATION bin
