@@ -1,9 +1,10 @@
-MojoServiceLauncher
 Summary
+=======
 
-OpenwebOS component responsible for launching the services
+OpenwebOS component responsible for launching the node.js services
 
 Dependencies
+============
 
 Below are the tools and libraries required to build.
 
@@ -12,6 +13,7 @@ Below are the tools and libraries required to build.
 
 
 How to Build on Linux
+=====================
 Building
 
 Once you have downloaded the source, execute the following to build it (after changing into the directory under which it was downloaded):
@@ -34,7 +36,7 @@ Specifying WEBOS_INSTALL_ROOT also causes pkg-config to look in that tree first 
 To see all of the make targets that CMake has generated, issue:
 $ make help
 
-Copyright and License Information
+# Copyright and License Information
 
 All content, including all source code files and documentation files in this repository except otherwise noted are:
 
