@@ -1,6 +1,8 @@
-Summary
-=======
+mojoservicelauncher
+===================
 
+Summary
+-------
 OpenwebOS component responsible for launching the node.js services
 
 Dependencies
@@ -9,7 +11,7 @@ Dependencies
 Below are the tools and libraries required to build.
 
 - boost
-- pbnjson 
+- libpbnjson
 
 
 How to Build on Linux
