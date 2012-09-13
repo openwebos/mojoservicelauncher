@@ -1,6 +1,6 @@
 # @@@LICENSE
 #
-#      Copyright (c) 2011-2012 Hewlett-Packard Development Company, L.P.
+#      Copyright (c) 2009-2012 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,32 +16,36 @@
 #
 # LICENSE@@@
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.7)
 
-install(FILES node_fork_server.upstart DESTINATION etc/event.d RENAME node_fork_server)
+project(mojoservicelauncher CXX)
 
-install(FILES fork_server.js DESTINATION usr/palm/nodejs)
+include(webOS/webOS)
+webos_modules_init(1 0 0 QUALIFIER RC3)
+webos_component(2 0 0)
 
-install(PROGRAMS jslauncher run-js-service DESTINATION usr/bin)
+include(FindPkgConfig)
 
-install(FILES bootstrap-node.js palm_bus_config.json sources.json DESTINATION usr/palm/services/jsservicelauncher)
+pkg_check_modules(PBNJSON_CPP REQUIRED pbnjson_cpp)
+include_directories(${PBNJSON_CPP_INCLUDE_DIRS})
+webos_add_compiler_flags(ALL ${PBNJSON_CPP_CFLAGS_OTHER})
 
-# Create empty directory
-install(DIRECTORY DESTINATION usr/palm/frameworks/private/javascripts)
+find_package(Boost REQUIRED COMPONENTS program_options)
+include_directories(Boost_INCLUDE_DIRS)
+
+webos_add_compiler_flags(ALL -Wall)
+
+install(FILES node_fork_server.upstart DESTINATION ${WEBOS_INSTALL_UPSTARTCONFDIR} RENAME node_fork_server)
+install(FILES fork_server.js DESTINATION ${WEBOS_INSTALL_WEBOS_PREFIX}/nodejs)
+install(PROGRAMS jslauncher run-js-service DESTINATION ${WEBOS_INSTALL_BINDIR})
+install(FILES bootstrap-node.js palm_bus_config.json sources.json DESTINATION ${WEBOS_INSTALL_WEBOS_SERVICESDIR}/jsservicelauncher)
+
+# Create empty directory (why?)
+install(DIRECTORY DESTINATION ${WEBOS_INSTALL_WEBOS_FRAMEWORKSDIR}/private/javascripts)
 
 add_executable(node_spawner node_spawner.cc)
 
-find_library(BOOST_PO boost_program_options)
-find_path(BOOST_INCLUDE_DIRS "boost/program_options.hpp")
-include_directories(${BOOST_INCLUDE_DIRS})
-
-find_library(PBNJSON_CPP_LIBRARIES pbnjson_cpp)
-find_path(PBNJSON_CPP_INCLUDE_DIRS "pbnjson.hpp")
-include_directories(${PBNJSON_CPP_INCLUDE_DIRS})
+target_link_libraries(node_spawner ${PBNJSON_CPP_LDFLAGS} ${Boost_LIBRARIES} rt)
+webos_build_program(NAME node_spawner)
 
 
-target_link_libraries(node_spawner ${BOOST_PO} ${PBNJSON_CPP_LIBRARIES} rt)
-
-install(TARGETS node_spawner
-        DESTINATION bin
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE)
