@@ -1,7 +1,7 @@
 #! /bin/sh
 # @@@LICENSE
 #
-#      Copyright (c) 2011-2012 Hewlett-Packard Development Company, L.P.
+#      Copyright (c) 2009-2012 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -137,7 +137,7 @@ fi
 # figure out how to jail the app
 # is the app a palm app or 3rd party?
 # does each app get its own jail or use a common one?
-if [ $jail == on ]; then
+if [ "$jail" = on ] ; then
 	case "${FULL_SERVICE_NAME}" in
 	com.palm.*)
 		appid="com.palm.triton"
@@ -168,12 +168,12 @@ if [ $jail == on ]; then
 	# determine if service is in the rom or was installed, as they
 	# use different configs
 	jailtype="triton"
-	if [ $ROM_SERVICE == off ]; then
+	if [ "$ROM_SERVICE" = off ] ; then
 		jailtype="triton-inst"
 	fi
 
 	# palm or 3rdparty jails might be off
-	if [ $jail == on ]; then
+	if [ "$jail" = on ] ; then
 		# always disable the fork server for jailed apps until jailer
 		# library is available
 		fork=off
