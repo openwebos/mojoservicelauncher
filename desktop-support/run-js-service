@@ -2,6 +2,7 @@
 # @@@LICENSE
 #
 #      Copyright (c) 2009-2012 Hewlett-Packard Development Company, L.P.
+#      Copyright (c) 2013 LG Electronics
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +21,7 @@ verbose=off
 debug=off
 fork=off
 debugger_port=5885
+inspector_port=8080
 timeouts=on
 heap_size=0	# 0 means use default
 enable_gc=off
@@ -31,7 +33,8 @@ fi
 
 # Jail master switch overrides the other jail switches- if
 # this is off, all js jails are off.  Valid values are "on" and "off".
-jail=on
+# DON'T USE JAIL ON DESKTOP BUILD
+jail=off
 # Jail palm services.  Valid values are "off", "collective" and "individual"
 # Collective means that all palm services share the same jail.
 # so one could read data owned by another, but startup of new
@@ -56,18 +59,20 @@ do
 		-k)  timeouts=off;;
 		-j)  jail=on;;
 		-n)  ;;
+		-i)  inspector_port=$2;shift;debug=on;;
 		--)	shift; break;;
 		-*)
-		echo >&2 "usage: $0 [-v] [-d] [-f] [-s size] [-p debugger-port] [-j] [-k] [-n] directory"
+		echo >&2 "usage: $0 [-v] [-d] [-f] [-s size] [-p debugger-port] [-j] [-k] [-n] [-i inspector-port] directory"
 		echo >&2 "-v : verbose mode"
 		echo >&2 "-d : enable debugger"
 		echo >&2 "-f : launch using Node.js fork server"
 		echo >&2 "-g : enable the gc extension"
 		echo >&2 "-s : specify max heap size (bytes) -- ignored when using fork server"
-		echo >&2 "-p [port] : set port for debugger"
+		echo >&2 "-p [port] : set port for debugger [default: 5885]"
 		echo >&2 "-k : disable timeouts (keep running)"
 		echo >&2 "-j : enable jailer"
-		echo >&2 "-n : use node.js engine (now the default, this option is still recognized for compatibility)"		
+		echo >&2 "-n : use node.js engine (now the default, this option is still recognized for compatibility)"
+		echo >&2 "-i [port] : set port used by node-inspector [default: 8080]"
 		exit 1;;
 		*)  break;;	# terminate while loop
 	esac
@@ -98,6 +103,10 @@ fi
 SERVICE_PATH=$1
 CURDIR=`pwd` # save environment since some sh has no pushd 
 cd `dirname ${SERVICE_PATH}` 
+if [ $? != 0 ]; then
+	echo "Invalid service path ${SERVICE_PATH}.  Exiting."
+	exit 3
+fi
 SERVICE_PATH=`pwd`/`basename ${SERVICE_PATH}` 
 cd ${CURDIR} # restore previous environment for safety's sake 
 echo "SERVICE_PATH is ${SERVICE_PATH}" # remove this line in production 
@@ -110,9 +119,13 @@ case "${SERVICE_PATH}" in
 		ROM_SERVICE=off
 		ROLES_PATH=/var/palm/ls2
 		;;
+	/media/developer/*)
+		ROM_SERVICE=off
+		ROLES_PATH=/var/palm/ls2
+		;;
 	*)
 		echo "Invalid service path ${SERVICE_PATH}.  Exiting."
-		exit 1
+		exit 3
 		;;
 esac
 
@@ -126,8 +139,9 @@ if [ $SERVICE_NAME_LENGTH -gt 13 ] ; then
 	fi
 fi
 
-# Identify which cpushareholder group the runner is in. 
-CGROUP="/no-group/not-present" # hack: non-existent directory and path, for failure case. Don't allow CGROUP to be empty string
+# Identify which cpushareholder group the runner is in.
+#CGROUP="/no-group/not-present" # use non-existent directory and path, for failure case. Don't allow CGROUP to be empty string
+CGROUP="/tmp/run-js-service-no-cgroup" # if cgroup/cpushareholder not in use, provide real file to eliminate EBADF exception
 if [ -f /proc/$$/cgroup -a -f /etc/default/cpushareholder ] ; then
 	. /etc/default/cpushareholder
 	cpushareholder_identify_current_group $$
@@ -229,6 +243,17 @@ fi
 
 if [ $debug = on ] ; then
 	timeouts=off
+	INSPECTOR_DIR="/media/cryptofs/apps/usr/palm/services/com.palmdts.devmode.service/"
+	if [ -f "${INSPECTOR_DIR}/node-inspector.sh" ] ; then
+		# call node-inspector.sh script in DevMode app
+		chmod +x ${INSPECTOR_DIR}/node-inspector.sh
+		${INSPECTOR_DIR}/node-inspector.sh ${inspector_port}
+	else
+		# if DevMode app is not available, see if "node-inspector" is available (on path)
+		inspector_interface="`ifconfig eth0|grep 'inet addr'|cut -d':' -f2|cut -d' ' -f1`"
+		node-inspector --web-port=${inspector_port} --web-host=${inspector_interface} &
+	fi
+
 	COMMAND_STRING="$JS_ENGINE --debug=$debugger_port $COMMON_OPTIONS"
 else
 	COMMAND_STRING="$JS_ENGINE $COMMON_OPTIONS"
@@ -246,6 +271,5 @@ if [ $verbose = on ] ; then
 	echo $JAIL_STRING $COMMAND_STRING
 fi
 
-##export LD_PRELOAD="/usr/lib/libmemcpy.so:${LD_PRELOAD}"
 export LD_LIBRARY_PATH="/usr/lib/luna/lib"
 exec $JAIL_STRING $COMMAND_STRING
