@@ -1,0 +1,40 @@
+# @@@LICENSE
+#
+#      Copyright (c) 2009-2013 LG Electronics, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# LICENSE@@@
+
+# node fork server
+
+description "node fork server"
+
+start on ls-hubd_public-ready
+stop on started start_update
+
+normal exit 0
+respawn
+
+# Comment this line out to suppress logs on the console
+#console output
+
+script
+    NODE_VAR="/var/palm/node"
+
+    mkdir -p ${NODE_VAR}
+    touch ${NODE_VAR}/fork
+    export NODE_PATH=/usr/palm/frameworks:/usr/palm/nodejs
+    # Set max heap size to 22 MiB (globally for every process forked)
+    /usr/palm/nodejs/node --max_old_space_size=23068672 /usr/palm/nodejs/fork_server.js
+end script

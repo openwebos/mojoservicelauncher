@@ -1,6 +1,6 @@
 # @@@LICENSE
 #
-#      Copyright (c) 2009-2012 Hewlett-Packard Development Company, L.P.
+#      Copyright (c) 2009-2013 LG Electronics, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ cmake_minimum_required(VERSION 2.8.7)
 project(mojoservicelauncher CXX)
 
 include(webOS/webOS)
-webos_modules_init(1 0 0 QUALIFIER RC3)
-webos_component(2 0 0)
+webos_modules_init(1 0 0 QUALIFIER RC4)
+webos_component(2 0 1)
 
 include(FindPkgConfig)
 
@@ -35,7 +35,8 @@ include_directories(Boost_INCLUDE_DIRS)
 
 webos_add_compiler_flags(ALL -Wall)
 
-install(FILES node_fork_server.upstart DESTINATION ${WEBOS_INSTALL_UPSTARTCONFDIR} RENAME node_fork_server)
+install(FILES files/launch/node_fork_server DESTINATION ${WEBOS_INSTALL_SYSCONFDIR}/event.d)
+install(FILES files/launch/node_fork_server.conf DESTINATION ${WEBOS_INSTALL_SYSCONFDIR}/init)
 install(FILES fork_server.js DESTINATION ${WEBOS_INSTALL_WEBOS_PREFIX}/nodejs)
 install(PROGRAMS jslauncher run-js-service DESTINATION ${WEBOS_INSTALL_BINDIR})
 install(FILES bootstrap-node.js palm_bus_config.json sources.json DESTINATION ${WEBOS_INSTALL_WEBOS_SERVICESDIR}/jsservicelauncher)
