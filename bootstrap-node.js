@@ -177,8 +177,14 @@ try {
 var shortname = name.slice(name.length-12)+".js";
 var args = paramsToScript.slice(0);
 args[0]=name+".js";
-process.setArgs(args);
-process.setName({"shortname":shortname});
+if (process.setArgs) {
+	// Palm-modified Node.js 0.4
+	process.setArgs(args);
+	process.setName({"shortname":shortname});
+} else {
+	// Node.js 0.10
+	process.title = shortname;
+}
 
 //console.error("cgroup: " + cgroup);
 //console.error("Args are: " + JSON.stringify(args));
