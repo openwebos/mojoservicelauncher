@@ -38,7 +38,7 @@ webos_add_compiler_flags(ALL -Wall)
 install(FILES files/launch/node_fork_server DESTINATION ${WEBOS_INSTALL_SYSCONFDIR}/event.d)
 install(FILES files/launch/node_fork_server.conf DESTINATION ${WEBOS_INSTALL_SYSCONFDIR}/init)
 install(FILES fork_server.js DESTINATION ${WEBOS_INSTALL_WEBOS_PREFIX}/nodejs)
-install(PROGRAMS jslauncher run-js-service DESTINATION ${WEBOS_INSTALL_BINDIR})
+install(PROGRAMS run-js-service DESTINATION ${WEBOS_INSTALL_BINDIR})
 install(FILES bootstrap-node.js palm_bus_config.json sources.json DESTINATION ${WEBOS_INSTALL_WEBOS_SERVICESDIR}/jsservicelauncher)
 
 # Create empty directory (why?)
