@@ -22,7 +22,7 @@ project(mojoservicelauncher CXX)
 
 include(webOS/webOS)
 webos_modules_init(1 0 0 QUALIFIER RC4)
-webos_component(2 0 1)
+webos_component(3 0 1)
 
 include(FindPkgConfig)
 
@@ -35,8 +35,9 @@ include_directories(Boost_INCLUDE_DIRS)
 
 webos_add_compiler_flags(ALL -Wall)
 
-install(FILES files/launch/node_fork_server DESTINATION ${WEBOS_INSTALL_SYSCONFDIR}/event.d)
-install(FILES files/launch/node_fork_server.conf DESTINATION ${WEBOS_INSTALL_SYSCONFDIR}/init)
+#don't enable the fork_server with Node v0.10
+#install(FILES files/launch/node_fork_server DESTINATION ${WEBOS_INSTALL_SYSCONFDIR}/event.d)
+#install(FILES files/launch/node_fork_server.conf DESTINATION ${WEBOS_INSTALL_SYSCONFDIR}/init)
 install(FILES fork_server.js DESTINATION ${WEBOS_INSTALL_WEBOS_PREFIX}/nodejs)
 install(PROGRAMS run-js-service DESTINATION ${WEBOS_INSTALL_BINDIR})
 install(FILES bootstrap-node.js palm_bus_config.json sources.json DESTINATION ${WEBOS_INSTALL_WEBOS_SERVICESDIR}/jsservicelauncher)
