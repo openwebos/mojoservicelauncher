@@ -122,8 +122,19 @@ function loadSource()
 }
 
 function loadAndStart() {
-	loadSource();
-	appController = new IMPORTS.mojoservice.AppController(paramsToScript);
+	var path = process.cwd();
+	if (fs.existsSync("sources.json")) { // mojoservice-based service
+		loadSource();
+		appController = new IMPORTS.mojoservice.AppController(paramsToScript);
+	} else if (fs.existsSync("package.json")) { // webos-service based Node module
+		//console.log("loading node module from "+path);
+		var mod = require(path);
+		if (mod.run) {
+			mod.run(name);
+		}
+	} else {
+		console.error("Couldn't determine launch file for service path "+path);
+	}
 }
 
 console = global['pmloglib'] ? global['pmloglib'] : require('pmloglib');
@@ -153,8 +164,15 @@ if (remainingCount > 0) {
 
 try {
 	var dir = paramsToScript[0];
-	var config = JSON.parse(loadFile("services.json", "utf8"));
-	var name = config["services"][0].name;
+	var config;
+	var name;
+	if (fs.existsSync("services.json")) {
+		config = JSON.parse(loadFile("services.json", "utf8"));	
+		name = config["services"][0].name;
+	} else {
+		config = JSON.parse(loadFile("package.json", "utf8"));	
+		name = config.name;
+	}
 	var max_len = 63;
 	var cname=name;
 	var namel=name.length;
@@ -183,7 +201,7 @@ if (process.setArgs) {
 	process.setName({"shortname":shortname});
 } else {
 	// Node.js 0.10
-	process.title = shortname;
+	process.title = name;
 }
 
 //console.error("cgroup: " + cgroup);

@@ -88,15 +88,13 @@ fi
 if [ x$BEDLAM_ROOT != x ]; then
 	FRAMEWORKS_PATH=$BEDLAM_ROOT/palm/frameworks
 	NODE_ADDONS=$BEDLAM_ROOT/palm/nodejs
-	JS=$BEDLAM_ROOT/bin/js
-	NODE=$NODE_ADDONS/node
+	NODE=$BEDLAM_ROOT/bin/node
 	NODE_SPAWNER=$BEDLAM_ROOT/bin/node_spawner
 	SERVICE_LAUNCHER=$BEDLAM_ROOT/palm/services/jsservicelauncher
 else
 	FRAMEWORKS_PATH=/usr/palm/frameworks
-	NODE_ADDONS=/usr/palm/nodejs
-	JS=/usr/bin/js
-	NODE=$NODE_ADDONS/node
+	NODE_ADDONS=/usr/lib/nodejs:/usr/lib/node_modules
+	NODE=/usr/bin/node
 	NODE_SPAWNER=/usr/bin/node_spawner
 	SERVICE_LAUNCHER=/usr/palm/services/jsservicelauncher
 fi
