@@ -130,7 +130,7 @@ case "${SERVICE_PATH}" in
 		;;
 	/media/developer/*)
 		ROM_SERVICE=off
-		ROLES_PATH=/var/palm/ls2
+		ROLES_PATH=/var/palm/ls2-dev
 		if [ "$debug" = on -a ! -f "/var/luna/preferences/devmode_enabled" ] ; then
 			echo "-d disabled, not in Developer mode"
 			debug=off
