@@ -270,5 +270,6 @@ if [ $verbose = on ] ; then
 	echo $JAIL_STRING $COMMAND_STRING
 fi
 
-export LD_LIBRARY_PATH="/usr/lib/luna/lib"
+##export LD_PRELOAD="/usr/lib/libmemcpy.so:${LD_PRELOAD}"
+export LD_LIBRARY_PATH="/usr/lib/luna/lib:${LD_LIBRARY_PATH}"
 exec $JAIL_STRING $COMMAND_STRING
