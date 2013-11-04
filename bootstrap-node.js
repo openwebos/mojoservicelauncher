@@ -47,13 +47,13 @@ if (process.version >= "v0.4.0") {
 			client.request = function (method, path, headers) {
 				options.method = method;
 				options.path = path;
-				options.headers = headers
+				options.headers = headers;
 				var request = module.request(options, function (response) {});
 				return request;
 			};
 			return client;
 		};
-	
+
 	}());
 }
 
@@ -61,7 +61,7 @@ function loadFile(path) {
 	try	{
 		return fs.readFileSync(path, "utf8");
 	} catch (e) {
-		
+
 	}
 	return "";
 }
@@ -98,7 +98,7 @@ function loadSource()
 		{
 			var file = files[i];
 			file.source && webos.include(file.source);
-		
+
 			if (file.library) {
 				var libname = MojoLoader.builtinLibName(file.library.name, file.library.version);
 				if (!global[libname]) {
@@ -108,7 +108,7 @@ function loadSource()
 				{
 					IMPORTS[file.library.name] = global[libname];
 				}
-			}	
+			}
 		}
 	}
 	catch (e)
@@ -123,15 +123,15 @@ function loadSource()
 
 function loadAndStart() {
 	var path = process.cwd();
-	if (fs.existsSync("sources.json")) { // mojoservice-based service
-		loadSource();
-		appController = new IMPORTS.mojoservice.AppController(paramsToScript);
-	} else if (fs.existsSync("package.json")) { // webos-service based Node module
+	if (fs.existsSync("package.json")) { // webos-service based Node module
 		//console.log("loading node module from "+path);
 		var mod = require(path);
 		if (mod.run) {
 			mod.run(name);
 		}
+	} else if (fs.existsSync("sources.json")) { // mojoservice-based service
+		loadSource();
+		appController = new IMPORTS.mojoservice.AppController(paramsToScript);
 	} else {
 		console.error("Couldn't determine launch file for service path "+path);
 	}
@@ -153,8 +153,8 @@ for (paramsIndex = 2; paramsIndex < paramsCount; ++ paramsIndex) {
 var remainingCount = paramsCount - paramsIndex;
 if (remainingCount > 0) {
     paramsToScript = params.slice(paramsIndex, paramsIndex+remainingCount);
-   
-    try { 
+
+    try {
         var cgroup = paramsToScript.splice(0, 1);
         writeGroupFile(cgroup[0]);
     } catch (e) {
@@ -167,10 +167,10 @@ try {
 	var config;
 	var name;
 	if (fs.existsSync("services.json")) {
-		config = JSON.parse(loadFile("services.json", "utf8"));	
+		config = JSON.parse(loadFile("services.json", "utf8"));
 		name = config["services"][0].name;
 	} else {
-		config = JSON.parse(loadFile("package.json", "utf8"));	
+		config = JSON.parse(loadFile("package.json", "utf8"));
 		name = config.name;
 	}
 	var max_len = 63;
@@ -212,13 +212,13 @@ if (process.getuid() === 0) {
 	try {
 		var publicRolePath  = dir+"/roles/pub/"+name+".json";
 		var privateRolePath = dir+"/roles/prv/"+name+".json";
-		//console.info("registering public");		
+		//console.info("registering public");
 		var publicHandle = new palmbus.Handle(null, true);
-		//console.info("pushing public role "+publicRolePath);		
+		//console.info("pushing public role "+publicRolePath);
 		publicHandle.pushRole(publicRolePath);
 		//console.info("registering private");
 		var privateHandle = new palmbus.Handle(null, false);
-		//console.info("pushing private role "+privateRolePath);		
+		//console.info("pushing private role "+privateRolePath);
 		privateHandle.pushRole(privateRolePath);
 	}
 	catch (e) {

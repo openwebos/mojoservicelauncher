@@ -39,7 +39,7 @@ jail=on
 # Jail palm services.  Valid values are "off", "collective" and "individual"
 # Collective means that all palm services share the same jail.
 # so one could read data owned by another, but startup of new
-# services can be faster.  
+# services can be faster.
 # Individual means each service gets its own jail.  It is the default.
 # turn palm jails off for now-ericm
 palm_jail=off
@@ -104,15 +104,15 @@ if [ -z "$SERVICE_PATH" ]; then
         echo "Service path not specified.  Exiting."
         exit 3
 fi
-CURDIR=`pwd` # save environment since some sh has no pushd 
-cd `dirname ${SERVICE_PATH}` 
+CURDIR=`pwd` # save environment since some sh has no pushd
+cd `dirname ${SERVICE_PATH}`
 if [ $? != 0 ]; then
 	echo "Invalid service path ${SERVICE_PATH}.  Exiting."
 	exit 3
 fi
-SERVICE_PATH=`pwd`/`basename ${SERVICE_PATH}` 
-cd ${CURDIR} # restore previous environment for safety's sake 
-echo "SERVICE_PATH is ${SERVICE_PATH}" # remove this line in production 
+SERVICE_PATH=`pwd`/`basename ${SERVICE_PATH}`
+cd ${CURDIR} # restore previous environment for safety's sake
+echo "SERVICE_PATH is ${SERVICE_PATH}" # remove this line in production
 case "${SERVICE_PATH}" in
 	/usr/palm/services/*)
 		ROM_SERVICE=on
@@ -225,13 +225,13 @@ export NODE_PATH="$FRAMEWORKS_PATH:$NODE_ADDONS"
 
 if [ $fork = on ]; then
 	# NOTE: heap size specified in node_fork_sever upstart job
-	
+
 	# specify directory to run in
 	JS_ENGINE=$NODE_SPAWNER
 	COMMON_OPTIONS="--no-stdin --syslog --script=$SERVICE_LAUNCHER/bootstrap-node.js --arg=$1"
 
 	# if we're not running from a tty, then don't pipe the child process'
-	# stdout/stderr to the parent (or spawner) 
+	# stdout/stderr to the parent (or spawner)
 	if [ ! -t 0 ]; then
 		COMMON_OPTIONS="--no-childstdout --no-childstderr $COMMON_OPTIONS"
 	fi
@@ -284,6 +284,8 @@ if [ $timeouts = off ] ; then
 	fi
 fi
 
+# include arguments after the -- in command line to script
+COMMAND_STRING="$COMMAND_STRING $*"
 if [ $verbose = on ] ; then
 	echo $JAIL_STRING $COMMAND_STRING
 fi

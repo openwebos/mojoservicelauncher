@@ -266,6 +266,7 @@ if [ $timeouts = off ] ; then
 	fi
 fi
 
+COMMAND_STRING="$COMMAND_STRING $*"
 if [ $verbose = on ] ; then
 	echo $JAIL_STRING $COMMAND_STRING
 fi
