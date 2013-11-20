@@ -133,6 +133,25 @@ case "${SERVICE_PATH}" in
 		fi
 		;;
 	/media/developer/*)
+		ares_config="$SERVICE_PATH/_ares"
+		if [ -f "$ares_config/debugger-port" ]; then
+			debug=on
+			debugger_port=`cat "$ares_config/debugger-port"`
+			case "$debugger_port" in
+				[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9]) ;;
+				* ) debugger_port=5885 ;;
+			esac
+			echo "setting debugger port to $debugger_port"
+		fi
+		if [ -f "$ares_config/inspector-port" ]; then
+			debug=on
+			inspector_port=`cat "$ares_config/inspector-port"`
+			case "$inspector_port" in
+				[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9]) ;;
+				* ) inspector_port=8080 ;;
+			esac
+			echo "setting inspector port to $inspector_port"
+		fi
 		ROM_SERVICE=off
 		ROLES_PATH=/var/palm/ls2-dev
 		if [ "$debug" = on -a ! -f "/var/luna/preferences/devmode_enabled" ] ; then
