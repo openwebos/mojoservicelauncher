@@ -78,11 +78,11 @@ static void log(const char *format, ...)
 	va_end(vargs);
 }
 
-static int uptime()
+static int64_t uptime()
 {
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
-	int64_t now = ts.tv_sec * 1000000000 + ts.tv_nsec;
+	int64_t now = (int64_t)ts.tv_sec * 1000000000 + (int64_t)ts.tv_nsec;
 	return now - gMainEnterTime;
 }
 
@@ -280,16 +280,21 @@ public:
 	void read()
 	{
 		ssize_t readSize = ::read(m_fd, m_readBuffer.data(), m_readBuffer.capacity());
-		if (m_pending.empty()) {
-			m_pending = m_readBuffer;
-			m_pending.resize(readSize);
+		if (readSize > 0) {
+			if (m_pending.empty()) {
+				m_pending = m_readBuffer;
+				m_pending.resize(readSize);
+			}
+			else {
+				size_t oldSize = m_pending.size();
+				m_pending.resize(m_pending.size() + readSize, 0);
+				memcpy(m_pending.data() + oldSize, m_readBuffer.data(), readSize);
+			}
+			processMessages();
 		}
 		else {
-			size_t oldSize = m_pending.size();
-			m_pending.resize(m_pending.size() + readSize, 0);
-			memcpy(m_pending.data() + oldSize, m_readBuffer.data(), readSize);
+			std::cerr << "Failed to read data"<< std::endl;
 		}
-		processMessages();
 	}
 
 	virtual void connected();
@@ -398,6 +403,7 @@ public:
 		: FDHandler(fd)
 		, m_pendingOffset(0)
 		, determined_connectability(false)
+		, connectionEstablished(false)
 	{
 	}
 
@@ -633,7 +639,7 @@ int main(int argc, char **argv)
 {
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
-	gMainEnterTime = ts.tv_sec * 1000000000 + ts.tv_nsec;
+	gMainEnterTime = (int64_t)ts.tv_sec * 1000000000 + (int64_t)ts.tv_nsec;
 
 	po::variables_map vm;
 	StrVector args;
